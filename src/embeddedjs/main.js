@@ -99,22 +99,45 @@ function drawScreen(event) {
     render.begin();
     render.fillRectangle(bgColor, 0, 0, render.width, render.height);
 
-    // Compute layout positions from unobstructed area
-    const timeY = (render.unobstructed.height - timeFont.height) / 2;
-
-    // Format time as HHMM (24h) or HMM (12h)
+    // Get individual digits
     let hours = now.getHours();
     if (!settings.use24Hour) {
         hours = hours % 12 || 12;
     }
-    const hoursStr = String(hours).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const timeStr = `${hoursStr}${minutes}`;
+    const hStr = String(hours).padStart(2, "0");
+    const mStr = String(now.getMinutes()).padStart(2, "0");
+    
+    const h1 = hStr[0];
+    const h2 = hStr[1];
+    const m1 = mStr[0];
+    const m2 = mStr[1];
 
-    // Draw time centered
-    let width = render.getTextWidth(timeStr, timeFont);
-    render.drawText(timeStr, timeFont, textColor,
-        (render.unobstructed.width - width) / 2, timeY);
+    // Layout settings based on layout.png
+    // Staggered: HH (Top-Left area), MM (Bottom-Right area)
+    const slotWidth = 40; // Fixed width for each digit slot to prevent shifting
+    const slotHeight = timeFont.height;
+    
+    // HH Position (Top-Left quadrant)
+    const hhX = (render.unobstructed.width * 0.1) | 0;
+    const hhY = (render.unobstructed.height * 0.1) | 0;
+    
+    // MM Position (Bottom-Right quadrant)
+    const mmX = (render.unobstructed.width * 0.4) | 0;
+    const mmY = (render.unobstructed.height * 0.35) | 0;
+
+    // Helper to draw centered in slot
+    const drawDigit = (digit, x, y) => {
+        const dWidth = render.getTextWidth(digit, timeFont);
+        render.drawText(digit, timeFont, textColor, x + (slotWidth - dWidth) / 2, y);
+    };
+
+    // Draw HH
+    drawDigit(h1, hhX, hhY);
+    drawDigit(h2, hhX + slotWidth - 5, hhY); // Slightly overlapping/close
+
+    // Draw MM
+    drawDigit(m1, mmX, mmY);
+    drawDigit(m2, mmX + slotWidth - 5, mmY);
 
     render.end();
 }
