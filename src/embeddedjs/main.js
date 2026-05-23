@@ -176,6 +176,7 @@ async function fetchWeather(latitude, longitude) {
         console.log("Fetching: " + url.toString());
         const response = await fetch(url.toString());
         const data = await response.json();
+        console.log("Weather JSON: " + JSON.stringify(data));
 
         weather = {
             temp: Math.round(data.current_weather.temperature),
