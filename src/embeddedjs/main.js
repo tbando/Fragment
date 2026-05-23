@@ -161,7 +161,8 @@ async function fetchWeather(latitude, longitude) {
         const params = {
             latitude,
             longitude,
-            current: "temperature_2m,weather_code"
+            current_weather: "true",
+            timezone: "auto"
         };
 
         // Use Fahrenheit if setting is enabled
@@ -173,15 +174,12 @@ async function fetchWeather(latitude, longitude) {
         url.search = new URLSearchParams(params);
 
         console.log("Fetching: " + url.toString());
-        const response = await fetch(url);
-        const text = await response.text();
-        console.log("Response length: " + text.length);
-        if (text.length < 100) console.log("Response: " + text);
-        const data = JSON.parse(text);
+        const response = await fetch(url.toString());
+        const data = await response.json();
 
         weather = {
-            temp: Math.round(data.current.temperature_2m),
-            conditions: getWeatherDescription(data.current.weather_code)
+            temp: Math.round(data.current_weather.temperature),
+            conditions: getWeatherDescription(data.current_weather.weathercode)
         };
 
         console.log("Weather: " + weather.temp + ", " + weather.conditions);
