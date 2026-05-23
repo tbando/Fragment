@@ -173,7 +173,7 @@ async function fetchWeather(latitude, longitude) {
         url.search = new URLSearchParams(params);
 
         console.log("Fetching weather...");
-        const response = await fetch(url);
+        const response = await fetch(url.toString());
         const data = await response.json();
 
         weather = {
