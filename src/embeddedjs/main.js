@@ -1,8 +1,8 @@
 import Poco from "commodetto/Poco";
 import parseBMF from "commodetto/parseBMF";
 import parseRLE from "commodetto/parseRLE";
-import Location from "embedded:sensor/Location";
-import Health from "embedded:sensor/Health";
+// import Location from "embedded:sensor/Location";
+// import Health from "embedded:sensor/Health";
 import Message from "pebble/message";
 
 const render = new Poco(screen);
@@ -69,126 +69,38 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 // Store latest time for redraws triggered by other events
 let lastDate = new Date();
 
-// Weather data
-let weather = null;
-
 // Steps data
 let steps = 0;
-const health = new Health();
+// const health = new Health();
 
 function updateSteps() {
+    console.log("Updating steps (logic disabled for now)");
+    /*
     health.read((sample) => {
         if (sample && sample.steps !== undefined) {
             steps = sample.steps;
+            console.log("Steps: " + steps);
             drawScreen();
         }
     }, { metric: "steps", period: "day" });
+    */
 }
-
-// Map Open-Meteo weather codes to descriptions
-function getWeatherDescription(code) {
-    if (code === 0) return "Clear";
-    if (code <= 3) return "Cloudy";
-    if (code <= 48) return "Fog";
-    if (code <= 55) return "Drizzle";
-    if (code <= 57) return "Fz. Drizzle";
-    if (code <= 65) return "Rain";
-    if (code <= 67) return "Fz. Rain";
-    if (code <= 75) return "Snow";
-    if (code <= 77) return "Snow Grains";
-    if (code <= 82) return "Showers";
-    if (code <= 86) return "Snow Shwrs";
-    if (code === 95) return "T-Storm";
-    if (code <= 99) return "T-Storm";
-    return "Unknown";
-}
-
-// Load cached weather on startup
-function loadCachedWeather() {
-    const cached = localStorage.getItem("weather");
-    const cachedTime = localStorage.getItem("weatherTime");
-
-    if (cached && cachedTime) {
-        const age = Date.now() - Number(cachedTime);
-        // Use cache if less than 1 hour old
-        if (age < 60 * 60 * 1000) {
-            try {
-                weather = JSON.parse(cached);
-                console.log("Using cached weather");
-                return true;
-            } catch (e) {
-                console.log("Failed to parse cached weather");
-            }
-        }
-    }
-    return false;
-}
-
-function saveWeather() {
-    if (weather) {
-        localStorage.setItem("weather", JSON.stringify(weather));
-        localStorage.setItem("weatherTime", String(Date.now()));
-    }
-}
-
-// Get location from the Location sensor
-let location = null;
-
-function requestLocation() {
-    location = new Location({
-        onSample() {
-            const sample = this.sample();
-            console.log("Got location: " + sample.latitude + ", " + sample.longitude);
-            this.close();
-            // fetchWeather(sample.latitude, sample.longitude);
-        }
-    });
-}
-
-/*
-async function fetchWeather(latitude, longitude) {
-    try {
-        let url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto`;
-        if (settings.useFahrenheit) {
-            url += "&temperature_unit=fahrenheit";
-        }
-
-        console.log("Fetching: " + url);
-        const response = await fetch(url);
-        console.log("Status: " + response.status);
-
-        const text = await response.text();
-        console.log("Raw Response (first 50): " + text.substring(0, 50));
-        
-        const data = JSON.parse(text);
-        console.log("Weather JSON: " + JSON.stringify(data));
-
-        weather = {
-            temp: Math.round(data.current_weather.temperature),
-            conditions: getWeatherDescription(data.current_weather.weathercode)
-        };
-
-        console.log("Weather: " + weather.temp + ", " + weather.conditions);
-        saveWeather();
-        drawScreen();
-
-    } catch (e) {
-        console.log("Weather fetch error: " + e);
-    }
-}
-*/
 
 function drawScreen(event) {
     const now = event?.date ?? lastDate;
     if (event?.date) lastDate = event.date;
 
+    // Log date to console
+    const dayName = DAYS[now.getDay()];
+    const monthName = MONTHS[now.getMonth()];
+    const dateStr = `${dayName} ${monthName} ${String(now.getDate()).padStart(2, "0")}`;
+    console.log("Date: " + dateStr);
+
     render.begin();
     render.fillRectangle(bgColor, 0, 0, render.width, render.height);
 
     // Compute layout positions from unobstructed area
-    const blockHeight = timeFont.height + dateFont.height;
-    const timeY = (render.unobstructed.height - blockHeight) / 2;
-    const dateY = timeY + timeFont.height;
+    const timeY = (render.unobstructed.height - timeFont.height) / 2;
 
     // Format time as HHMM (24h) or HMM (12h)
     let hours = now.getHours();
@@ -203,24 +115,6 @@ function drawScreen(event) {
     let width = render.getTextWidth(timeStr, timeFont);
     render.drawText(timeStr, timeFont, textColor,
         (render.unobstructed.width - width) / 2, timeY);
-
-    // Draw date if setting is enabled
-    if (settings.showDate) {
-        const dayName = DAYS[now.getDay()];
-        const monthName = MONTHS[now.getMonth()];
-        const dateStr = `${dayName} ${monthName} ${String(now.getDate()).padStart(2, "0")}`;
-
-        width = render.getTextWidth(dateStr, dateFont);
-        render.drawText(dateStr, dateFont, textColor,
-            (render.unobstructed.width - width) / 2, dateY);
-    }
-
-    // Draw steps at bottom
-    const stepsY = render.unobstructed.height - smallFont.height - (render.unobstructed.height < 180 ? 6 : 20);
-    const stepsStr = `${steps} steps`;
-    width = render.getTextWidth(stepsStr, smallFont);
-    render.drawText(stepsStr, smallFont, textColor,
-        (render.unobstructed.width - width) / 2, stepsY);
 
     render.end();
 }
