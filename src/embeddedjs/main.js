@@ -109,12 +109,12 @@ function drawScreen(event) {
     const slotHeight = timeFont.height;
     
     // HH Position (Top-Left area)
-    const hhX = (render.unobstructed.width * 0.05) | 0;
-    const hhY = (render.unobstructed.height * 0.05) | 0;
+    const hhX = (render.unobstructed.width * 0.00) | 0;
+    const hhY = (render.unobstructed.height * 0.00) | 0;
     
     // MM Position (Bottom-Right area)
-    const mmX = (render.unobstructed.width * 0.25) | 0;
-    const mmY = (render.unobstructed.height * 0.45) | 0;
+    const mmX = (render.unobstructed.width * 0.35) | 0;
+    const mmY = (render.unobstructed.height * 0.40) | 0;
 
     // Helper to draw centered in slot
     const drawDigit = (digit, x, y) => {
