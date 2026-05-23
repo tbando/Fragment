@@ -131,8 +131,8 @@ function drawScreen(event) {
     drawDigit(m2, mmX + slotWidth - 10, mmY);
 
     // Draw static labels
-    const labelY = render.unobstructed.height - dateFont.height - 30;
-    render.drawText("STEP", dateFont, textColor, 10, labelY);
+    const labelY = render.unobstructed.height - smallFont.height - 30;
+    render.drawText("STEP", smallFont, textColor, 10, labelY);
 
     render.end();
 }
