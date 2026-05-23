@@ -156,6 +156,7 @@ function requestLocation() {
     });
 }
 
+/*
 async function fetchWeather(latitude, longitude) {
     try {
         let url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto`;
@@ -186,9 +187,10 @@ async function fetchWeather(latitude, longitude) {
         console.log("Weather fetch error: " + e);
     }
 }
+*/
 
 // Load cached weather on startup
-loadCachedWeather();
+// loadCachedWeather();
 
 function drawBatteryBar() {
     const barWidth = (render.unobstructed.width / 2) | 0;
@@ -265,6 +267,7 @@ function drawScreen(event) {
     }
 
     // Draw weather at bottom
+    /*
     const weatherY = render.unobstructed.height - smallFont.height - (render.unobstructed.height < 180 ? 6 : 20);
     if (weather) {
         const unit = settings.useFahrenheit ? "F" : "C";
@@ -278,6 +281,7 @@ function drawScreen(event) {
         render.drawText(msg, smallFont, textColor,
             (render.unobstructed.width - width) / 2, weatherY);
     }
+    */
 
     render.end();
 }
@@ -286,7 +290,7 @@ function drawScreen(event) {
 watch.addEventListener("minutechange", drawScreen);
 
 // Refresh weather every hour and on startup
-watch.addEventListener("hourchange", requestLocation);
+// watch.addEventListener("hourchange", requestLocation);
 
 // Redraw when Timeline Quick View changes the unobstructed area
 watch.addEventListener("resize", drawScreen);
@@ -323,8 +327,10 @@ const message = new Message({
         drawScreen();
 
         // Re-fetch weather if temperature unit changed
+        /*
         if (tu !== undefined) {
             requestLocation();
         }
+        */
     }
 });
