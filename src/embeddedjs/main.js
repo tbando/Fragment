@@ -15,8 +15,8 @@ function getFont(name, size) {
 }
 
 // Fonts
-const timeFont = getFont("artemis_inter", 56);
-const dateFont = getFont("artemis_inter", 24);
+const timeFont = getFont("artemis_inter", 112);
+const dateFont = getFont("artemis_inter", 48);
 const smallFont = new render.Font("Gothic-Regular", 18);
 
 // Default settings
@@ -75,15 +75,6 @@ let steps = 0;
 
 function updateSteps() {
     console.log("Updating steps (logic disabled for now)");
-    /*
-    health.read((sample) => {
-        if (sample && sample.steps !== undefined) {
-            steps = sample.steps;
-            console.log("Steps: " + steps);
-            drawScreen();
-        }
-    }, { metric: "steps", period: "day" });
-    */
 }
 
 function drawScreen(event) {
@@ -114,16 +105,16 @@ function drawScreen(event) {
 
     // Layout settings based on layout.png
     // Staggered: HH (Top-Left area), MM (Bottom-Right area)
-    const slotWidth = 40; // Fixed width for each digit slot to prevent shifting
+    const slotWidth = 70; // Adjusted for larger font
     const slotHeight = timeFont.height;
     
-    // HH Position (Top-Left quadrant)
-    const hhX = (render.unobstructed.width * 0.1) | 0;
-    const hhY = (render.unobstructed.height * 0.1) | 0;
+    // HH Position (Top-Left area)
+    const hhX = (render.unobstructed.width * 0.05) | 0;
+    const hhY = (render.unobstructed.height * 0.05) | 0;
     
-    // MM Position (Bottom-Right quadrant)
-    const mmX = (render.unobstructed.width * 0.4) | 0;
-    const mmY = (render.unobstructed.height * 0.35) | 0;
+    // MM Position (Bottom-Right area)
+    const mmX = (render.unobstructed.width * 0.25) | 0;
+    const mmY = (render.unobstructed.height * 0.45) | 0;
 
     // Helper to draw centered in slot
     const drawDigit = (digit, x, y) => {
@@ -133,11 +124,11 @@ function drawScreen(event) {
 
     // Draw HH
     drawDigit(h1, hhX, hhY);
-    drawDigit(h2, hhX + slotWidth - 5, hhY); // Slightly overlapping/close
+    drawDigit(h2, hhX + slotWidth - 10, hhY); // Slightly overlapping
 
     // Draw MM
     drawDigit(m1, mmX, mmY);
-    drawDigit(m2, mmX + slotWidth - 5, mmY);
+    drawDigit(m2, mmX + slotWidth - 10, mmY);
 
     render.end();
 }

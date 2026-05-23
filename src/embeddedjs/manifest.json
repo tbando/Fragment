@@ -9,13 +9,13 @@
 		"*-alpha": [
 			{
 				"source": "./assets/artemis_inter",
-				"size": 56,
+				"size": 112,
 				"monochrome": true,
 				"blocks": ["Basic Latin"]
 			},
 			{
 				"source": "./assets/artemis_inter",
-				"size": 24,
+				"size": 48,
 				"monochrome": true,
 				"blocks": ["Basic Latin"]
 			}
