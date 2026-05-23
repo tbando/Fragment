@@ -172,9 +172,12 @@ async function fetchWeather(latitude, longitude) {
         const url = new URL("https://api.open-meteo.com/v1/forecast");
         url.search = new URLSearchParams(params);
 
-        console.log("Fetching weather...");
+        console.log("Fetching: " + url.toString());
         const response = await fetch(url);
-        const data = await response.json();
+        const text = await response.text();
+        console.log("Response length: " + text.length);
+        if (text.length < 100) console.log("Response: " + text);
+        const data = JSON.parse(text);
 
         weather = {
             temp: Math.round(data.current.temperature_2m),
