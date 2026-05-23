@@ -249,7 +249,7 @@ function drawScreen(event) {
     }
     const hoursStr = String(hours).padStart(2, "0");
     const minutes = String(now.getMinutes()).padStart(2, "0");
-    const timeStr = `${hoursStr}:${minutes}`;
+    const timeStr = `${hoursStr}${minutes}`;
 
     // Draw time centered
     let width = render.getTextWidth(timeStr, timeFont);
@@ -271,7 +271,7 @@ function drawScreen(event) {
     const weatherY = render.unobstructed.height - smallFont.height - (render.unobstructed.height < 180 ? 6 : 20);
     if (weather) {
         const unit = settings.useFahrenheit ? "F" : "C";
-        const weatherStr = `${weather.temp}°${unit} ${weather.conditions}`;
+        const weatherStr = `${weather.temp}${unit} ${weather.conditions}`;
         width = render.getTextWidth(weatherStr, smallFont);
         render.drawText(weatherStr, smallFont, textColor,
             (render.unobstructed.width - width) / 2, weatherY);
