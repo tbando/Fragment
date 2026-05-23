@@ -1,8 +1,8 @@
 import Poco from "commodetto/Poco";
 import parseBMF from "commodetto/parseBMF";
 import parseRLE from "commodetto/parseRLE";
-import Battery from "embedded:sensor/Battery";
 import Location from "embedded:sensor/Location";
+import Health from "embedded:sensor/Health";
 import Message from "pebble/message";
 
 const render = new Poco(screen);
@@ -53,9 +53,6 @@ let bgColor = render.makeColor(settings.backgroundColor.r,
     settings.backgroundColor.g, settings.backgroundColor.b);
 let textColor = render.makeColor(settings.textColor.r,
     settings.textColor.g, settings.textColor.b);
-const green = render.makeColor(0, 170, 0);
-const yellow = render.makeColor(255, 170, 0);
-const red = render.makeColor(255, 0, 0);
 
 function updateColors() {
     bgColor = render.makeColor(settings.backgroundColor.r,
@@ -75,26 +72,18 @@ let lastDate = new Date();
 // Weather data
 let weather = null;
 
-// Battery state
-let batteryPercent = 100;
+// Steps data
+let steps = 0;
+const health = new Health();
 
-const battery = new Battery({
-    onSample() {
-        batteryPercent = this.sample().percent;
-        drawScreen();
-    }
-});
-batteryPercent = battery.sample().percent;
-
-// Connection state
-let isConnected = true;
-
-function checkConnection() {
-    isConnected = watch.connected.app;
-    drawScreen();
+function updateSteps() {
+    health.read((sample) => {
+        if (sample && sample.steps !== undefined) {
+            steps = sample.steps;
+            drawScreen();
+        }
+    }, { metric: "steps", period: "day" });
 }
-watch.addEventListener("connected", checkConnection);
-checkConnection();
 
 // Map Open-Meteo weather codes to descriptions
 function getWeatherDescription(code) {
@@ -204,27 +193,6 @@ function drawScreen(event) {
     const timeY = (render.unobstructed.height - blockHeight) / 2;
     const dateY = timeY + timeFont.height;
 
-    // Draw battery bar at top
-    drawBatteryBar();
-
-    // Draw Bluetooth disconnect indicator below battery bar
-    if (!isConnected) {
-        const btStr = "X";
-        const btWidth = render.getTextWidth(btStr, smallFont);
-        const btY = render.unobstructed.height < 180 ? 16 : 30;
-        render.drawText(btStr, smallFont, red,
-            (render.unobstructed.width - btWidth) / 2, btY);
-    }
-
-    // Format time as HH:MM (24h) or H:MM (12h)
-    let hours = now.getHours();
-    if (!settings.use24Hour) {
-        hours = hours % 12 || 12;
-    }
-    const hoursStr = String(hours).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const timeStr = `${hoursStr}${minutes}`;
-
     // Draw time centered
     let width = render.getTextWidth(timeStr, timeFont);
     render.drawText(timeStr, timeFont, textColor,
@@ -240,6 +208,13 @@ function drawScreen(event) {
         render.drawText(dateStr, dateFont, textColor,
             (render.unobstructed.width - width) / 2, dateY);
     }
+
+    // Draw steps at bottom
+    const stepsY = render.unobstructed.height - smallFont.height - (render.unobstructed.height < 180 ? 6 : 20);
+    const stepsStr = `${steps} steps`;
+    width = render.getTextWidth(stepsStr, smallFont);
+    render.drawText(stepsStr, smallFont, textColor,
+        (render.unobstructed.width - width) / 2, stepsY);
 
     // Draw weather at bottom
     /*
@@ -262,7 +237,10 @@ function drawScreen(event) {
 }
 
 // Update every minute (fires immediately when registered)
-watch.addEventListener("minutechange", drawScreen);
+watch.addEventListener("minutechange", (event) => {
+    updateSteps();
+    drawScreen(event);
+});
 
 // Refresh weather every hour and on startup
 // watch.addEventListener("hourchange", requestLocation);
@@ -330,6 +308,12 @@ const message = new Message({
         // Re-fetch weather if temperature unit changed
         /*
         if (tu !== undefined) {
+            requestLocation();
+        }
+        */
+    }
+});  }
+});       if (tu !== undefined) {
             requestLocation();
         }
         */
