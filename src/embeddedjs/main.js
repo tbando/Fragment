@@ -158,24 +158,19 @@ function requestLocation() {
 
 async function fetchWeather(latitude, longitude) {
     try {
-        const params = {
-            latitude,
-            longitude,
-            current_weather: "true",
-            timezone: "auto"
-        };
-
-        // Use Fahrenheit if setting is enabled
+        let url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto`;
         if (settings.useFahrenheit) {
-            params.temperature_unit = "fahrenheit";
+            url += "&temperature_unit=fahrenheit";
         }
 
-        const url = new URL("https://api.open-meteo.com/v1/forecast");
-        url.search = new URLSearchParams(params);
+        console.log("Fetching: " + url);
+        const response = await fetch(url);
+        console.log("Status: " + response.status);
 
-        console.log("Fetching: " + url.toString());
-        const response = await fetch(url.toString());
-        const data = await response.json();
+        const text = await response.text();
+        console.log("Raw Response (first 50): " + text.substring(0, 50));
+        
+        const data = JSON.parse(text);
         console.log("Weather JSON: " + JSON.stringify(data));
 
         weather = {
