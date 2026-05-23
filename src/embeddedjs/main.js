@@ -140,7 +140,7 @@ function requestLocation() {
             const sample = this.sample();
             console.log("Got location: " + sample.latitude + ", " + sample.longitude);
             this.close();
-            fetchWeather(sample.latitude, sample.longitude);
+            // fetchWeather(sample.latitude, sample.longitude);
         }
     });
 }
@@ -176,11 +176,8 @@ async function fetchWeather(latitude, longitude) {
         console.log("Weather fetch error: " + e);
     }
 }
-textColor = render.makeColor(settings.textColor.r,
-    settings.textColor.g, settings.textColor.b);
-}
+*/
 
-// Day and month names
 function drawScreen(event) {
     const now = event?.date ?? lastDate;
     if (event?.date) lastDate = event.date;
@@ -192,6 +189,15 @@ function drawScreen(event) {
     const blockHeight = timeFont.height + dateFont.height;
     const timeY = (render.unobstructed.height - blockHeight) / 2;
     const dateY = timeY + timeFont.height;
+
+    // Format time as HHMM (24h) or HMM (12h)
+    let hours = now.getHours();
+    if (!settings.use24Hour) {
+        hours = hours % 12 || 12;
+    }
+    const hoursStr = String(hours).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const timeStr = `${hoursStr}${minutes}`;
 
     // Draw time centered
     let width = render.getTextWidth(timeStr, timeFont);
@@ -216,23 +222,6 @@ function drawScreen(event) {
     render.drawText(stepsStr, smallFont, textColor,
         (render.unobstructed.width - width) / 2, stepsY);
 
-    // Draw weather at bottom
-    /*
-    const weatherY = render.unobstructed.height - smallFont.height - (render.unobstructed.height < 180 ? 6 : 20);
-    if (weather) {
-        const unit = settings.useFahrenheit ? "F" : "C";
-        const weatherStr = `${weather.temp}${unit} ${weather.conditions}`;
-        width = render.getTextWidth(weatherStr, smallFont);
-        render.drawText(weatherStr, smallFont, textColor,
-            (render.unobstructed.width - width) / 2, weatherY);
-    } else {
-        const msg = "Loading...";
-        width = render.getTextWidth(msg, smallFont);
-        render.drawText(msg, smallFont, textColor,
-            (render.unobstructed.width - width) / 2, weatherY);
-    }
-    */
-
     render.end();
 }
 
@@ -241,9 +230,6 @@ watch.addEventListener("minutechange", (event) => {
     updateSteps();
     drawScreen(event);
 });
-
-// Refresh weather every hour and on startup
-// watch.addEventListener("hourchange", requestLocation);
 
 // Redraw when Timeline Quick View changes the unobstructed area
 watch.addEventListener("resize", drawScreen);
@@ -278,45 +264,5 @@ const message = new Message({
         saveSettings();
         updateColors();
         drawScreen();
-
-        // Re-fetch weather if temperature unit changed
-        /*
-        if (tu !== undefined) {
-            requestLocation();
-        }
-        */
     }
-});            settings.textColor = { r: (tc >> 16) & 0xFF, g: (tc >> 8) & 0xFF, b: tc & 0xFF };
-        }
-        const tu = msg.get("TemperatureUnit");
-        if (tu !== undefined) {
-            settings.useFahrenheit = tu === 1;
-        }
-        const sd = msg.get("ShowDate");
-        if (sd !== undefined) {
-            settings.showDate = sd === 1;
-        }
-        const hf = msg.get("HourFormat");
-        if (hf !== undefined) {
-            settings.use24Hour = hf === 1;
-        }
-
-        saveSettings();
-        updateColors();
-        drawScreen();
-
-        // Re-fetch weather if temperature unit changed
-        /*
-        if (tu !== undefined) {
-            requestLocation();
-        }
-        */
-    }
-});  }
-});       if (tu !== undefined) {
-            requestLocation();
-        }
-        */
-    }
-});  }
 });
