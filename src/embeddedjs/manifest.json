@@ -8,13 +8,13 @@
 	"resources": {
 		"*-alpha": [
 			{
-				"source": "./assets/Jersey10-Regular",
+				"source": "./assets/artemis_inter",
 				"size": 56,
 				"monochrome": true,
 				"blocks": ["Basic Latin"]
 			},
 			{
-				"source": "./assets/Jersey10-Regular",
+				"source": "./assets/artemis_inter",
 				"size": 24,
 				"monochrome": true,
 				"blocks": ["Basic Latin"]

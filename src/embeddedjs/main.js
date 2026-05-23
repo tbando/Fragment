@@ -15,8 +15,8 @@ function getFont(name, size) {
 }
 
 // Fonts
-const timeFont = getFont("Jersey10-Regular", 56);
-const dateFont = getFont("Jersey10-Regular", 24);
+const timeFont = getFont("artemis_inter", 56);
+const dateFont = getFont("artemis_inter", 24);
 const smallFont = new render.Font("Gothic-Regular", 18);
 
 // Default settings
