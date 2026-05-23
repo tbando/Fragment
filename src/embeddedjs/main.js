@@ -187,36 +187,11 @@ async function fetchWeather(latitude, longitude) {
         console.log("Weather fetch error: " + e);
     }
 }
-*/
-
-// Load cached weather on startup
-// loadCachedWeather();
-
-function drawBatteryBar() {
-    const barWidth = (render.unobstructed.width / 2) | 0;
-    const barX = ((render.unobstructed.width - barWidth) / 2) | 0;
-    const barY = render.unobstructed.height < 180 ? 6 : 20;
-    const barHeight = 8;
-
-    // Draw border using text color
-    render.fillRectangle(textColor, barX, barY, barWidth, barHeight);
-    render.fillRectangle(bgColor, barX + 1, barY + 1, barWidth - 2, barHeight - 2);
-
-    // Choose color based on battery level
-    let barColor;
-    if (batteryPercent <= 20) {
-        barColor = red;
-    } else if (batteryPercent <= 40) {
-        barColor = yellow;
-    } else {
-        barColor = green;
-    }
-
-    // Draw filled portion
-    const fillWidth = ((batteryPercent * (barWidth - 4)) / 100) | 0;
-    render.fillRectangle(barColor, barX + 2, barY + 2, fillWidth, barHeight - 4);
+textColor = render.makeColor(settings.textColor.r,
+    settings.textColor.g, settings.textColor.b);
 }
 
+// Day and month names
 function drawScreen(event) {
     const now = event?.date ?? lastDate;
     if (event?.date) lastDate = event.date;
@@ -333,4 +308,31 @@ const message = new Message({
         }
         */
     }
+});            settings.textColor = { r: (tc >> 16) & 0xFF, g: (tc >> 8) & 0xFF, b: tc & 0xFF };
+        }
+        const tu = msg.get("TemperatureUnit");
+        if (tu !== undefined) {
+            settings.useFahrenheit = tu === 1;
+        }
+        const sd = msg.get("ShowDate");
+        if (sd !== undefined) {
+            settings.showDate = sd === 1;
+        }
+        const hf = msg.get("HourFormat");
+        if (hf !== undefined) {
+            settings.use24Hour = hf === 1;
+        }
+
+        saveSettings();
+        updateColors();
+        drawScreen();
+
+        // Re-fetch weather if temperature unit changed
+        /*
+        if (tu !== undefined) {
+            requestLocation();
+        }
+        */
+    }
+});  }
 });
